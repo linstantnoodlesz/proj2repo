@@ -110,14 +110,11 @@ public class IntList {
     public static IntList reverse(IntList A) {
         IntList front = null;
         IntList p = A;
-        IntList r = A.rest;
         while (p != null) {
+            IntList remainder = p.rest;
             p.rest = front;
             front = p;
-            p = r;
-            if (r != null) {
-                r = r.rest;
-            }
+            p = remainder;
         }
         A = front;
         return A;
