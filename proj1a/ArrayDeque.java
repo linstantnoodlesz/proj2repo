@@ -123,7 +123,7 @@ public class ArrayDeque<Item> {
         }
         array = newArray;
         nextFirst = newFirst;
-        nextLast = newFirst + size + 2;
+        nextLast = (newFirst + size + 2) % array.length;
     }
 
     /**
