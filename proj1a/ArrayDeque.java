@@ -118,7 +118,7 @@ public class ArrayDeque<Item> {
         //Fills in new array with corresponding items
         while (i <= size) {
             newArray[startCopyIndex] = get(i);
-            i = (i+1) % array.length;
+            i = (i + 1) % array.length;
             startCopyIndex = (startCopyIndex + 1) % array.length;
         }
         array = newArray;
