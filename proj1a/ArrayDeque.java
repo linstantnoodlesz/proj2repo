@@ -118,7 +118,7 @@ public class ArrayDeque<Item> {
         //Fills in new array with corresponding items
         while (i <= size) {
             newArray[startCopyIndex] = get(i);
-            i++;
+            i = (i+1) % array.length;
             startCopyIndex = (startCopyIndex + 1) % array.length;
         }
         array = newArray;
@@ -130,12 +130,15 @@ public class ArrayDeque<Item> {
      * Removes the first item in the deque and returns it; resizes underlying array if necessary
      */
     public Item removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
         //Invariant; removing an item always decreases deque size by 1
         size -= 1;
         //Checks if deque size is a sufficiently small fraction of underlying array length
         // for resize operations. Also gives lower bound to array length so we don't shrink
         // for already-small arrays
-        if (size <= array.length * THRESHOLD_USAGE_RATIO && array.length >= minArrayLength) {
+        if (size <= array.length * THRESHOLD_USAGE_RATIO && size >= minArrayLength) {
             //If sufficient amount of underlying array is not being used, free up resources by
             //shrinking array
             arrayShrink();
@@ -150,8 +153,11 @@ public class ArrayDeque<Item> {
      * Removes the last item in the deque and returns it
      */
     public Item removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
         size -= 1;
-        if (size <= array.length * THRESHOLD_USAGE_RATIO && size >= 4) {
+        if (size <= array.length * THRESHOLD_USAGE_RATIO && size >= minArrayLength) {
             arrayShrink();
         }
         nextLast = Math.floorMod(nextLast - 1, array.length);
