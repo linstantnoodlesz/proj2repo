@@ -94,8 +94,10 @@ public class LinkedListDeque<Item> implements Deque<Item> {
      */
     @Override
     public void printDeque() {
+        Node p = sentinel.next;
         for (int i = 0; i < size; i++) {
-            System.out.print(get(i) + " ");
+            System.out.print(p.value);
+            p = p.next;
         }
         System.out.println("");
     }

@@ -35,7 +35,7 @@ public class Palindrome {
     /**
      * Checks whether a deque of characters is symmetric; implemented using recursion
      */
-    public static boolean isPalindrome(Deque<Character> word) {
+    private static boolean isPalindrome(Deque<Character> word) {
         if (word.size() == 0 || word.size() == 1) {
             return true;
         }
@@ -57,7 +57,7 @@ public class Palindrome {
      * Checks whether a deque of characters is symmetric; implemented using recursion
      * Equality defined by character comparator's equalChars method
      */
-    public static boolean isPalindrome(Deque<Character> word, CharacterComparator cc) {
+    private static boolean isPalindrome(Deque<Character> word, CharacterComparator cc) {
         if (word.size() == 0 || word.size() == 1) {
             return true;
         }

@@ -9,7 +9,7 @@ public class TestArrayDeque1B {
 
     @Test
     public void addAndRemoveRandom() {
-        StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
+        LinkedListDeque<Integer> sad = new LinkedListDeque<>();
         ArrayDequeSolution<Integer> ads = new ArrayDequeSolution<>();
         OperationSequence opSequence = new OperationSequence();
         DequeOperation opAddFirst;
@@ -19,7 +19,7 @@ public class TestArrayDeque1B {
         DequeOperation opGet;
         String message;
 
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 100; i++) {
             int randomInt = StdRandom.uniform(4);
             int index;
             switch (randomInt) {

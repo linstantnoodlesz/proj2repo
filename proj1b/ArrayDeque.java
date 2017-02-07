@@ -179,6 +179,9 @@ public class ArrayDeque<Item> implements Deque<Item> {
      */
     @Override
     public Item get(int index) {
+        if (index < 0 || index >= size) {
+            return null;
+        }
         //Because first is the zero index, we count the indices from there
         int arrayIndex = (nextFirst + index + 1) % array.length;
         return array[arrayIndex];
