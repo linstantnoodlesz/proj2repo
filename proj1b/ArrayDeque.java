@@ -1,7 +1,8 @@
-public class ArrayDeque<Item> {
-
-    //This implementation of the array double-ended queue uses a circular topology, hence the
-    //use of the modulo operator for indices of underlying array.
+/**
+ * This implementation of the array double-ended queue uses a circular topology, hence the
+ *use of the modulo operator for indices of underlying array.
+ */
+public class ArrayDeque<Item> implements Deque<Item> {
 
     //The size of the array deque cached.
     private int size;
@@ -53,6 +54,7 @@ public class ArrayDeque<Item> {
     /**
      * Adds item to the front of the array deque; resizes array if necessary
      */
+    @Override
     public void addFirst(Item item) {
         //Invariant: adding an item always increases size by 1
         size += 1;
@@ -69,6 +71,7 @@ public class ArrayDeque<Item> {
     /**
      * Adds item to the end of the array deque
      */
+    @Override
     public void addLast(Item item) {
         size += 1;
         if (nextLast == nextFirst) {
@@ -82,6 +85,7 @@ public class ArrayDeque<Item> {
     /**
      * Checks if the deque is empty by checking if its size is 0
      */
+    @Override
     public boolean isEmpty() {
         return (size == 0);
     }
@@ -89,6 +93,7 @@ public class ArrayDeque<Item> {
     /**
      * Public selector method to return deque's size
      */
+    @Override
     public int size() {
         return size;
     }
@@ -96,6 +101,7 @@ public class ArrayDeque<Item> {
     /**
      * Prints the elements of the deque from first to last separated by a space
      */
+    @Override
     public void printDeque() {
         for (int i = 0; i < size; i++) {
             System.out.print(get(i) + " ");
@@ -129,6 +135,7 @@ public class ArrayDeque<Item> {
     /**
      * Removes the first item in the deque and returns it; resizes underlying array if necessary
      */
+    @Override
     public Item removeFirst() {
         if (isEmpty()) {
             return null;
@@ -152,6 +159,7 @@ public class ArrayDeque<Item> {
     /**
      * Removes the last item in the deque and returns it
      */
+    @Override
     public Item removeLast() {
         if (isEmpty()) {
             return null;
@@ -169,11 +177,9 @@ public class ArrayDeque<Item> {
     /**
      * Returns the item in the deque at position index in the array
      */
+    @Override
     public Item get(int index) {
         //Because first is the zero index, we count the indices from there
-        if (index < 0 || index >= size) {
-            return null;
-        }
         int arrayIndex = (nextFirst + index + 1) % array.length;
         return array[arrayIndex];
     }
