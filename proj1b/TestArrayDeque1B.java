@@ -9,7 +9,7 @@ public class TestArrayDeque1B {
 
     @Test
     public void addAndRemoveRandom() {
-        LinkedListDeque<Integer> sad = new LinkedListDeque<>();
+        StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
         ArrayDequeSolution<Integer> ads = new ArrayDequeSolution<>();
         OperationSequence opSequence = new OperationSequence();
         DequeOperation opAddFirst;

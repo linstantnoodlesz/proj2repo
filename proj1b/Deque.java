@@ -9,7 +9,7 @@ public interface Deque<Item> {
 
     boolean isEmpty();
 
-    public int size();
+    int size();
 
     void printDeque();
 

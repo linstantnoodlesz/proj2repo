@@ -3,10 +3,6 @@
  */
 public class Palindrome {
 
-    public static void main(String[] args) {
-
-    }
-
     /**
      * Converts a string into a deque of characters
      */
