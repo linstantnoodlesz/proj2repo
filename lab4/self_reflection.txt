@@ -4,23 +4,25 @@ ArrayDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: Making the code more modular; my solution had plenty of cases where I repeated certain lines, like calculating
+idices, but putting repetitions into private methods would make the code better to understand.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: Most of the pride comes from the fact that it works at all, but mostly that I was able to use the concepts
+learned in class about data structures and Java coding to be able to make a relatively short array deque solution.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: All the index calculations, especially when resizing
 
 Q: What do you wish you would have known before writing ArrayDeque, if anything?
 
-A:
+A: Knowing how to efficiently write modular code.
 
 Q: If you wrote ArrayDeque again, what would you do differently, if anything?
 
-A:
+A: I would make it more modular and understandable.
 
 -----
 
@@ -28,23 +30,25 @@ LinkedListDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: Instead of using "sentinel.next.next.prev" for example, the staff solution that put "sentinel.next.next"
+into a variable, then reassigning its prev would be better.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: I really like the simplicity of implementning the linked list array deque, and its use of a
+private node class and sentinel.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: The lack of variables in the remove methods, "sentinel.next.next.prev".
 
-Q: What do you wish you would have known before writing ArrayDeque, if anything?
+Q: What do you wish you would have known before writing LinkedListDeque, if anything?
 
-A:
+A: I think I knew what I had to know.
 
 Q: If you wrote LinkedListDeque again, what would you do differently, if anything?
 
-A:
+A: Putting some long expressions into variables in the remove method.
 
 -----
 
