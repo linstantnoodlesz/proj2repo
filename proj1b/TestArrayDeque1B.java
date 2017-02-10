@@ -4,6 +4,7 @@
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import jh61b.junit.TestRunner;
 
 public class TestArrayDeque1B {
 
@@ -19,7 +20,7 @@ public class TestArrayDeque1B {
         DequeOperation opGet;
         String message;
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 300; i++) {
             int randomInt = StdRandom.uniform(4);
             int index;
             switch (randomInt) {
