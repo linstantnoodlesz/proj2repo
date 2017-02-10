@@ -19,7 +19,7 @@ public class TestArrayDeque1B {
         DequeOperation opGet;
         String message;
 
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 50; i++) {
             int randomInt = StdRandom.uniform(4);
             int index;
             switch (randomInt) {
