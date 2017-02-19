@@ -1,7 +1,5 @@
 package synthesizer;
 
-import synthesizer.BoundedQueue;
-
 /**
  * Created by Joseph on 2/17/2017.
  */

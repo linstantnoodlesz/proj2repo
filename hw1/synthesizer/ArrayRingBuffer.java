@@ -1,6 +1,5 @@
 package synthesizer;
 
-import synthesizer.AbstractBoundedQueue;
 import java.util.Iterator;
 
 public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
