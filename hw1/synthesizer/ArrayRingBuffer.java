@@ -10,24 +10,29 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     /* Array for storing the buffer data. */
     private T[] rb;
 
-    //Private class for array ring buffer that implements iterator
-    private class ArrayRingBufferIterator implements Iterator {
+    //Nested class for array ring buffer that implements iterator
+    public class ArrayRingBufferIterator implements Iterator {
 
         //Gives the current index of the array ring buffer for the iterator,
         //Initialized at first
         private int currentIndex;
 
+        //Counter for iteration, hasNext returns false when counter == capacity
+        private int counter;
+
         private ArrayRingBufferIterator() {
+            counter = 0;
             currentIndex = first;
         }
 
         public boolean hasNext() {
-            return currentIndex < capacity();
+            return counter < capacity;
         }
 
         public T next() {
             T item = rb[currentIndex];
-            currentIndex += 1;
+            currentIndex = (currentIndex + 1) % capacity;
+            counter += 1;
             return item;
         }
     }
