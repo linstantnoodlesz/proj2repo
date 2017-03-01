@@ -1,5 +1,6 @@
 package db;
 
+import javax.management.AttributeList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -34,13 +35,31 @@ public class Table {
      * Adds row to table; implements insert command
      */
     void addRow(List<Object> row) throws RuntimeException {
-        if (row.size() != table.size()) {
+        //Gets the number of columns
+        int cols = table.size();
+        if (row.size() != cols) {
             throw new RuntimeException("Row size and column size must match");
         }
-
-        //TODO: Finish
-        for (Column c : table) {
-            if 
+        //Checks if the types match up; gets class of the item in rows, then converts
+        //it into a string in lowercase
+        for (int i = 0; i < cols; i++) {
+            Class rowClass = row.get(i).getClass();
+            String rowType = rowClass.getTypeName().toLowerCase();
+            //Converts double to float
+            if (rowType == "double") {
+                rowType = "float";
+            }
+            Column c = table.get(i);
+            //If the types do not match, throw exception
+            if (!rowType.equals(c.columnType)) {
+                throw new RuntimeException("Type of " + row.get(i) + ", " + rowType +
+                        ", does not match " + c.columnType);
+            }
+        }
+        //If no errors in types, then iterate through columns to add the row
+        for (int j = 0; j < cols; j++) {
+            Column column = table.get(j);
+            column.items.add(row.get(j));
         }
     }
 
@@ -50,50 +69,128 @@ public class Table {
      * columns don't share any values, then return an empty table. If they don't share
      * any columns, then return the Cartesian product of the tables.
      */
-    Table joinTables(String name, Table otherTable) {
-        List<Column> sharedColumns = new ArrayList<>();
+    Table join(Table otherTable) {
+        List<String> sharedColumnNames = new ArrayList<>();
         Set<String> table2Names = otherTable.columnNames;
 
         // Iterates through column names of table 1 and checks for shared columns in
         // table 2.
-        for (String c : columnNames) {
-            if (table2Names.contains(c)) {
-                sharedColumns.add(getColumn(c));
+        for (String name : columnNames) {
+            if (table2Names.contains(name)) {
+                sharedColumnNames.add(name);
             }
         }
 
         // If tables 1 & 2 don't share any columns, return the cartesian product
-        if (sharedColumns.isEmpty()) {
+        if (sharedColumnNames.isEmpty()) {
             return cartesianProduct(otherTable);
         }
 
-        //Adds remaining un
-        Table joinedTable = new Table(sharedColumns);
-        //TODO: Finish join operation for tables with shared columns
+        //The shared columns between tables 1 and 2
+        List<Column> columns = new ArrayList<>();
+
+        //Adds the shared column names to columns
+        for (String colName : sharedColumnNames) {
+            //Creates new column whose name is colName and type columnType of
+            String colType = getColumn(colName).columnType;
+            Column column = new Column(colName, colType.toLowerCase());
+            columns.add(column);
+        }
+
+        //Adds the o
+        Table joinedTable = new Table(columns);
+        //TODO: Finish!!
+
     }
 
     /**
      * Returns the cartesian product of tables 1 & 2. That is, for each row in table 1,
      * we append to it a row in table 2 for each row in table 2.
      */
-    Table cartesianProduct(Table otherTable) {
+    private Table cartesianProduct(Table otherTable) {
         List<Column> tableColumns = new ArrayList<>(table);
         for (Column c : otherTable.table) {
             tableColumns.add(c);
         }
         Table joinedTable = new Table(tableColumns);
-        //TODO: Finish!
+
+        //Gets length of column items in this table and in other table
+        Column firstCol1 = table.get(0);
+        int thisLength = firstCol1.items.size();
+
+        Column firstCol2 = otherTable.table.get(0);
+        int otherLength = firstCol2.items.size();
+
+        //Iterate through the rows in this table and through each row in other table,
+        //adding each item to the row to be added to joined table
+        for (int i = 0; i < thisLength; i++) {
+
+            List<Object> rowToAdd = new ArrayList<>();
+
+            //Iterate through the columns in this table to add items to rowToAdd
+            for (Column c : table) {
+                List colItemsThis = c.items;
+                rowToAdd.add(colItemsThis.get(i));
+            }
+
+            for (int j = 0; j < otherLength; j++) {
+
+                //Iterate through the columns in other table to add items to rowToAdd
+                for (Column c : otherTable.table) {
+                    List colItemsOther = c.items;
+                    rowToAdd.add(colItemsOther.get(j));
+                }
+
+                //Iteration for one row complete; adds row to joined table
+                joinedTable.addRow(rowToAdd);
+            }
+        }
+        return joinedTable;
     }
 
     /**
      * Returns the column in the table with the given name
      */
-    Column getColumn(String name) {
+    private Column getColumn(String name) {
         for (Column column : table) {
             if (column.columnName == name) {
                 return column;
             }
         }
         return null;
+    }
+
+    /*Prints the table */
+    void printTable() {
+        //Prints the first row which is the list of column names and types
+        for (int i = 0; i < table.size(); i++) {
+            if (i > 0) {
+                System.out.print(",");
+            }
+            Column column = table.get(i);
+            System.out.print(column.columnName + " " + column.columnType);
+        }
+        System.out.println("");
+        //Iterates through the rows, defined by the size of the list of items of each column
+        int rows = table.get(0).items.size();
+
+        for (int j = 0; j < rows; j++) {
+
+            //For each row, iterate through the columns
+            for (int i = 0; i < table.size(); i++) {
+                if (i > 0) {
+                    System.out.print(",");
+                }
+                //Gets the items list of the column
+                Column c = table.get(i);
+                List items = c.items;
+                if (c.columnType == "string") {
+                    System.out.println("\'" + items.get(j) + "\'");
+                } else {
+                    System.out.print(items.get(j));
+                }
+            }
+            System.out.println("");
+        }
     }
 }

@@ -1,3 +1,5 @@
+package db;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -31,15 +33,15 @@ public class Parse {
                                                "\\s*(?:,\\s*.+?\\s*)*)");
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        /* if (args.length != 1) {
             System.err.println("Expected a single query argument");
             return;
-        }
+        } */
 
         eval(args[0]);
     }
 
-    private static void eval(String query) {
+    static void eval(String query) {
         Matcher m;
         if ((m = CREATE_CMD.matcher(query)).matches()) {
              createTable(m.group(1));

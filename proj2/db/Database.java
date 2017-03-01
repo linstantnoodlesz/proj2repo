@@ -7,19 +7,20 @@ import java.util.Map;
 
 public class Database {
 
-    //The tables of the database kept in a list
+    //The tables of the database kept in a map, where each table's associated key
+    //is its name as a string
     private Map<String, Table> tables;
 
     /**
-     * Public constructor for database
+     * Private constructor for database
      */
-    public Database() {
+    private Database() {
         // YOUR CODE HERE
         tables = new TreeMap<>();
     }
 
     public String transact(String query) {
-
+        Parse.eval(query);
         return "YOUR CODE HERE";
     }
 
@@ -57,6 +58,23 @@ public class Database {
      */
     private String store(String tableName) {
         //TODO: Learn how to write content into a file
+        return "";
+    }
+
+    /**
+     * Loads the contents of <table name>.tbl file into memory as a table with
+     * name <table name>
+     */
+    private String load(String tableName) {
+        //TODO: Read input from file
+        return "";
+    }
+
+    /* Prints the table */
+    private String printTable(String tableName) {
+        //Gets the table from database and obtains the list of columns
+        Table t = tables.get(tableName);
+        t.printTable();
         return "";
     }
 }
