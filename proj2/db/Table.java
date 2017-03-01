@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 /**
  * Created by Joseph on 2/21/2017.
@@ -15,7 +17,7 @@ public class Table {
     private List<Column> table;
 
     // The names of the columns of the table cached in a list; used for joins operation
-    private Set<String> columnNames;
+    private List<String> columnNames;
 
     /**
      *  Public constructor method for table to create new table; sets table name,
@@ -23,7 +25,7 @@ public class Table {
      */
     public Table(List<Column> columns) {
         table = columns;
-        columnNames = new HashSet<>();
+        columnNames = new ArrayList<>();
 
         // Adds the names of every column to the list of column names
         for (Column c : table) {
@@ -70,36 +72,30 @@ public class Table {
      * any columns, then return the Cartesian product of the tables.
      */
     Table join(Table otherTable) {
-        List<String> sharedColumnNames = new ArrayList<>();
-        Set<String> table2Names = otherTable.columnNames;
+        List<String> joinedColumnNames = new ArrayList<>();
+        //Holds temporary sets of table1 and table 2 names for utility
+        List<String> table1Names = new ArrayList<>(columnNames);
+        List<String> table2Names = new ArrayList<>(otherTable.columnNames);
 
-        // Iterates through column names of table 1 and checks for shared columns in
-        // table 2.
-        for (String name : columnNames) {
-            if (table2Names.contains(name)) {
-                sharedColumnNames.add(name);
+        //Iterates through column names in this table and compares to column names in
+        //other table; if shared, then add to joined column names and remove from sets
+        for (Column col : table) {
+            String colName = col.columnName;
+            if (table2Names.contains(colName)) {
+                joinedColumnNames.add(colName);
+                table1Names.remove(colName);
+                table2Names.remove(colName);
             }
         }
 
-        // If tables 1 & 2 don't share any columns, return the cartesian product
-        if (sharedColumnNames.isEmpty()) {
-            return cartesianProduct(otherTable);
+        //Adds the rest of the columns to joined column names
+        for (String table1name : table1Names) {
+            joinedColumnNames.add(table1name);
         }
-
-        //The shared columns between tables 1 and 2
-        List<Column> columns = new ArrayList<>();
-
-        //Adds the shared column names to columns
-        for (String colName : sharedColumnNames) {
-            //Creates new column whose name is colName and type columnType of
-            String colType = getColumn(colName).columnType;
-            Column column = new Column(colName, colType.toLowerCase());
-            columns.add(column);
+        for (String table2name : table2Names) {
+            joinedColumnNames.add(table2name);
         }
-
-        //Adds the o
-        Table joinedTable = new Table(columns);
-        //TODO: Finish!!
+        
 
     }
 

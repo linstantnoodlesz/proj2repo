@@ -12,9 +12,9 @@ public class Database {
     private Map<String, Table> tables;
 
     /**
-     * Private constructor for database
+     * Public constructor for database
      */
-    private Database() {
+    public Database() {
         // YOUR CODE HERE
         tables = new TreeMap<>();
     }
