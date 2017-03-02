@@ -32,12 +32,12 @@ public class Table {
     /**
      * Adds row to table; implements insert command
      */
-    void addRow(List<String> row) throws RuntimeException {
+    String addRow(List<String> row) throws RuntimeException {
         //Gets the number of columns
         int numCols = table.size();
         //Throws exception if row and column sizes differ
         if (row.size() != numCols) {
-            throw new RuntimeException("Row size and column size must match");
+            return "Row size and column size must match";
         }
         //Checks if the types match up; gets class of the item in rows, then converts
         //it into a string in lowercase
@@ -45,7 +45,7 @@ public class Table {
             Column column = table.get(i);
             //Gets the class of the items in the column
             String colType = column.columnType;
-            if (colType.equals("integer")) {
+            if (colType.equals("int")) {
                 try {
                     int item = Integer.parseInt(row.get(i));
                     column.items.add(item);
@@ -63,9 +63,10 @@ public class Table {
                 String item = row.get(i);
                 column.items.add(item);
             } else {
-                throw new RuntimeException("Types do not match");
+                return "Types do not match";
             }
         }
+        return "";
     }
 
     /**

@@ -61,7 +61,7 @@ public class Parser {
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
             return insertRow(m.group(1));
         } else if ((m = PRINT_CMD.matcher(query)).matches()) {
-            printTable(m.group(1));
+            return printTable(m.group(1));
         } else if ((m = SELECT_CMD.matcher(query)).matches()) {
             select(m.group(1));
         } else {
@@ -70,6 +70,9 @@ public class Parser {
         return null;
     }
 
+    /* Checks the method of creating a table. Returns a list of strings where 0-th item is
+     * the command and 1st is the table name
+     */
     private static List<String> createTable(String expr) {
         Matcher m;
         //A list of the arguments to create the table
@@ -120,26 +123,39 @@ public class Parser {
         System.out.printf("You are trying to drop the table named %s\n", name);
     }
 
-    //TODO: Parse insert command
+    /* Returns the list of values in the row to be added, as strings */
     private static List<String> insertRow(String expr) {
         Matcher m = INSERT_CLS.matcher(expr);
         //A list of the arguments to insert into table
         List<String> stringArgs = new LinkedList<>();
         stringArgs.add("insert");
 
-        stringArgs.add(m.group(2));
-        System.out.println(stringArgs);
         if (!m.matches()) {
             System.err.printf("Malformed insert: %s\n", expr);
             return null;
         }
+        //Adds the name of the table
+        stringArgs.add(m.group(1));
 
-        System.out.printf("You are trying to insert the row \"%s\" into the table %s\n", m.group(2), m.group(1));
-        return null;
+        //Adds a string of the values to be inserted
+        String row = m.group(2).replace(" ", "");
+
+        //System.out.printf("You are trying to insert the row \"%s\" into the table %s\n", rowValues, m.group(1));
+
+        String[] rowValues = row.split(",");
+        for (String val : rowValues) {
+            stringArgs.add(val);
+        }
+        return stringArgs;
     }
 
-    private static void printTable(String name) {
-        System.out.printf("You are trying to print the table named %s\n", name);
+    /* Returns a list of strings where 0-th element is the command and 1st element is the table name */
+    private static List<String> printTable(String name) {
+        //System.out.printf("You are trying to print the table named %s\n", name);
+        List<String> stringArgs = new LinkedList<>();
+        stringArgs.add("print");
+        stringArgs.add(name);
+        return stringArgs;
     }
 
     private static void select(String expr) {

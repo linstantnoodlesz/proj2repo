@@ -23,19 +23,32 @@ public class Database {
         List<String> stringArgs = Parser.eval(query);
 
         String command = stringArgs.get(0);
+        //Gets table name
+        String tableName = stringArgs.get(1);
+        //Gets length of the list string args from query
+        int stringArgsLength = stringArgs.size();
 
-        if (command.equals("create new table")) {
-            //Gets table name
-            String tableName = stringArgs.get(1);
-            List<String> colInfo = new LinkedList<>();
-            int stringArgsLength = stringArgs.size();
-            for (int i = 2; i < stringArgsLength; i++) {
-                String[] colSplit = stringArgs.get(i).split(" ");
-                for (String col : colSplit) {
-                    colInfo.add(col);
+        switch (command) {
+            case "create new table":
+                List<String> colInfo = new LinkedList<>();
+                for (int i = 2; i < stringArgsLength; i++) {
+                    String[] colSplit = stringArgs.get(i).split(" ");
+                    for (String col : colSplit) {
+                        colInfo.add(col);
+                    }
                 }
-            }
-            return createTable(tableName, colInfo);
+                return createTable(tableName, colInfo);
+
+            case "insert":
+                List<String> rowVals = new LinkedList<>();
+                for (int i = 2; i < stringArgsLength; i++) {
+                    rowVals.add(stringArgs.get(i));
+                }
+                return insertRow(tableName, rowVals);
+
+            case "print":
+                //Prints the table
+                return printTable(tableName);
         }
 
 
@@ -113,7 +126,6 @@ public class Database {
     /* Inserts a row into the table */
     private String insertRow(String tableName, List<String> rowInfo) {
         Table table = tables.get(tableName);
-        table.addRow(rowInfo);
-        return "";
+        return table.addRow(rowInfo);
     }
 }
