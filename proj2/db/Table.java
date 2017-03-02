@@ -1,12 +1,7 @@
 package db;
 
 import javax.management.AttributeList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Deque;
-import java.util.ArrayDeque;
+import java.util.*;
 
 /**
  * Created by Joseph on 2/21/2017.
@@ -16,16 +11,16 @@ public class Table {
     // Table is implemented as a list of columns
     private List<Column> table;
 
-    // The names of the columns of the table cached in a list; used for joins operation
-    private List<String> columnNames;
+    // The names of the columns of the table cached in a set; used for joins operation
+    private Set<String> columnNames;
 
     /**
      *  Public constructor method for table to create new table; sets table name,
      *  creates table, and stores a list of its column names
      */
-    public Table(List<Column> columns) {
+    Table(List<Column> columns) {
         table = columns;
-        columnNames = new ArrayList<>();
+        columnNames = new LinkedHashSet<>();
 
         // Adds the names of every column to the list of column names
         for (Column c : table) {
@@ -36,9 +31,10 @@ public class Table {
     /**
      * Adds row to table; implements insert command
      */
-    void addRow(List<Object> row) throws RuntimeException {
+    private void addRow(List<Object> row) throws RuntimeException {
         //Gets the number of columns
         int cols = table.size();
+        //Throws exception if row and column sizes differ
         if (row.size() != cols) {
             throw new RuntimeException("Row size and column size must match");
         }
@@ -48,7 +44,7 @@ public class Table {
             Class rowClass = row.get(i).getClass();
             String rowType = rowClass.getTypeName().toLowerCase();
             //Converts double to float
-            if (rowType == "double") {
+            if (rowType.equals("double")) {
                 rowType = "float";
             }
             Column c = table.get(i);
@@ -72,17 +68,20 @@ public class Table {
      * any columns, then return the Cartesian product of the tables.
      */
     Table join(Table otherTable) {
-        List<String> joinedColumnNames = new ArrayList<>();
-        //Holds temporary sets of table1 and table 2 names for utility
-        List<String> table1Names = new ArrayList<>(columnNames);
-        List<String> table2Names = new ArrayList<>(otherTable.columnNames);
+        Set<String> joinedColumnNames = new LinkedHashSet<>();
+        //Holds sets of table1, table 2, & shared column names for utility
+        Set<String> table1Names = new LinkedHashSet<>(columnNames);
+        Set<String> table2Names = new LinkedHashSet<>(otherTable.columnNames);
+        Set<String> sharedColumnNames = new LinkedHashSet<>();
 
         //Iterates through column names in this table and compares to column names in
-        //other table; if shared, then add to joined column names and remove from sets
+        //other table; if shared, then add to joined column names and shared column names
+        //and remove from sets
         for (Column col : table) {
             String colName = col.columnName;
             if (table2Names.contains(colName)) {
                 joinedColumnNames.add(colName);
+                sharedColumnNames.add(colName);
                 table1Names.remove(colName);
                 table2Names.remove(colName);
             }
@@ -95,7 +94,20 @@ public class Table {
         for (String table2name : table2Names) {
             joinedColumnNames.add(table2name);
         }
-        
+
+        //Iterates through joined table names to create the joined table
+        List<Column> joinedTable = new ArrayList<>();
+        for (String name : joinedColumnNames) {
+            Column colToAdd;
+            if (columnNames.contains(name)) {
+                colToAdd = new Column(name, getColumn(name).columnType);
+            } else {
+                colToAdd = new Column(name, otherTable.getColumn(name).columnType);
+            }
+            joinedTable.add(colToAdd);
+        }
+
+
 
     }
 
@@ -149,24 +161,25 @@ public class Table {
      */
     private Column getColumn(String name) {
         for (Column column : table) {
-            if (column.columnName == name) {
+            if (column.columnName.equals(name)) {
                 return column;
             }
         }
-        return null;
+        throw new RuntimeException("No column " + name + " found.");
     }
 
     /*Prints the table */
-    void printTable() {
+    String printTable() {
+        String tablePrinted = "";
         //Prints the first row which is the list of column names and types
         for (int i = 0; i < table.size(); i++) {
             if (i > 0) {
-                System.out.print(",");
+                tablePrinted += ",";
             }
             Column column = table.get(i);
-            System.out.print(column.columnName + " " + column.columnType);
+            tablePrinted += column.columnName + " " + column.columnType;
         }
-        System.out.println("");
+        tablePrinted += "\n";
         //Iterates through the rows, defined by the size of the list of items of each column
         int rows = table.get(0).items.size();
 
@@ -175,18 +188,19 @@ public class Table {
             //For each row, iterate through the columns
             for (int i = 0; i < table.size(); i++) {
                 if (i > 0) {
-                    System.out.print(",");
+                    tablePrinted += ",";
                 }
                 //Gets the items list of the column
                 Column c = table.get(i);
                 List items = c.items;
-                if (c.columnType == "string") {
-                    System.out.println("\'" + items.get(j) + "\'");
+                if (c.columnType.equals("string")) {
+                    tablePrinted += "\'" + items.get(j) + "\'";
                 } else {
-                    System.out.print(items.get(j));
+                    tablePrinted += items.get(j);
                 }
             }
-            System.out.println("");
+            tablePrinted += "\n";
         }
+        return tablePrinted;
     }
 }

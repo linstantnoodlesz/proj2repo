@@ -1,7 +1,7 @@
 package db;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Joseph on 2/27/2017.

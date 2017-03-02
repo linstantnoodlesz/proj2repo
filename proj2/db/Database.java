@@ -1,9 +1,6 @@
 package db;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Database {
 
@@ -74,7 +71,7 @@ public class Database {
     private String printTable(String tableName) {
         //Gets the table from database and obtains the list of columns
         Table t = tables.get(tableName);
-        t.printTable();
+        System.out.println(t.printTable());
         return "";
     }
 }
