@@ -2,6 +2,7 @@ package db;
 
 import javax.management.AttributeList;
 import java.util.*;
+import java.lang.Object;
 
 /**
  * Created by Joseph on 2/21/2017.
@@ -31,33 +32,39 @@ public class Table {
     /**
      * Adds row to table; implements insert command
      */
-    private void addRow(List<Object> row) throws RuntimeException {
+    void addRow(List<String> row) throws RuntimeException {
         //Gets the number of columns
-        int cols = table.size();
+        int numCols = table.size();
         //Throws exception if row and column sizes differ
-        if (row.size() != cols) {
+        if (row.size() != numCols) {
             throw new RuntimeException("Row size and column size must match");
         }
         //Checks if the types match up; gets class of the item in rows, then converts
         //it into a string in lowercase
-        for (int i = 0; i < cols; i++) {
-            Class rowClass = row.get(i).getClass();
-            String rowType = rowClass.getTypeName().toLowerCase();
-            //Converts double to float
-            if (rowType.equals("double")) {
-                rowType = "float";
+        for (int i = 0; i < numCols; i++) {
+            Column column = table.get(i);
+            //Gets the class of the items in the column
+            String colType = column.columnType;
+            if (colType.equals("integer")) {
+                try {
+                    int item = Integer.parseInt(row.get(i));
+                    column.items.add(item);
+                } catch (NumberFormatException e) {
+
+                }
+            } else if (colType.equals("float")) {
+                try {
+                    float item = Float.parseFloat(row.get(i));
+                    column.items.add(item);
+                } catch (NumberFormatException e) {
+
+                }
+            } else if (colType.equals("string")) {
+                String item = row.get(i);
+                column.items.add(item);
+            } else {
+                throw new RuntimeException("Types do not match");
             }
-            Column c = table.get(i);
-            //If the types do not match, throw exception
-            if (!rowType.equals(c.columnType)) {
-                throw new RuntimeException("Type of " + row.get(i) + ", " + rowType +
-                        ", does not match " + c.columnType);
-            }
-        }
-        //If no errors in types, then iterate through columns to add the row
-        for (int j = 0; j < cols; j++) {
-            Column column = table.get(j);
-            column.items.add(row.get(j));
         }
     }
 
@@ -107,6 +114,9 @@ public class Table {
             joinedTableColumns.add(colToAdd);
         }
 
+        //Joined table to return
+        Table joinedTable = new Table(joinedTableColumns);
+
         //Gets length of items in this table
         int thisLength = table.get(0).items.size();
         //Gets length of items in other table
@@ -115,11 +125,12 @@ public class Table {
         //Iterates through the rows in this table to check for same values for shared columns
         for (int i = 0; i < thisLength; i++) {
 
-            List<Object> potentialRow = new ArrayList<>();
+            List<String> potentialRow = new ArrayList<>();
 
             //Iterates through the rows in the other table
             for (int j = 0; j < otherLength; j++) {
-
+                //Whether to add a row or not
+                boolean addRow = true;
                 //Iterates through shared column names in this table
                 for (String s : sharedColumnNames) {
                     Column sharedColThis = getColumn(s);
@@ -128,11 +139,29 @@ public class Table {
                     Object item2 = sharedColOther.items.get(j);
                     //If value is unequal, break from for-loop and move on to next row
                     if (!item1.equals(item2)) {
+                        addRow = false;
                         break;
                     }
                 }
+                if (addRow) {
+                    for (String nameToAdd : joinedColumnNames) {
+                        if (table1Names.contains(nameToAdd)) {
+                            //Adds the i-th item in this table's column
+                            potentialRow.add(toString(getColumn(nameToAdd).items.get(i)));
+                        } else {
+                            //Adds the j-th item in the other table's column
+                            potentialRow.add(toString(otherTable.getColumn(nameToAdd).items.get(j)));
+                        }
+                    }
+                    joinedTable.addRow(potentialRow);
+                }
             }
         }
+        return joinedTable;
+    }
+
+    private String toString(Object o) {
+        return toString(o);
     }
 
 
@@ -158,12 +187,12 @@ public class Table {
         //adding each item to the row to be added to joined table
         for (int i = 0; i < thisLength; i++) {
 
-            List<Object> rowToAdd = new ArrayList<>();
+            List<String> rowToAdd = new ArrayList<>();
 
             //Iterate through the columns in this table to add items to rowToAdd
             for (Column c : table) {
                 List colItemsThis = c.items;
-                rowToAdd.add(colItemsThis.get(i));
+                rowToAdd.add(toString(colItemsThis.get(i)));
             }
 
             for (int j = 0; j < otherLength; j++) {
@@ -171,7 +200,7 @@ public class Table {
                 //Iterate through the columns in other table to add items to rowToAdd
                 for (Column c : otherTable.table) {
                     List colItemsOther = c.items;
-                    rowToAdd.add(colItemsOther.get(j));
+                    rowToAdd.add(toString(colItemsOther.get(j)));
                 }
 
                 //Iteration for one row complete; adds row to joined table

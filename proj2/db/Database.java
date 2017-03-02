@@ -3,59 +3,8 @@ package db;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Database {
-
-    private class Parse {
-        // Various common constructs, simplifies parsing.
-        private static final String REST = "\\s*(.*)\\s*",
-                COMMA = "\\s*,\\s*",
-                AND = "\\s+and\\s+";
-
-        // Stage 1 syntax, contains the command name.
-        private final Pattern CREATE_CMD = Pattern.compile("create table " + REST),
-                LOAD_CMD = Pattern.compile("load " + REST),
-                STORE_CMD = Pattern.compile("store " + REST),
-                DROP_CMD = Pattern.compile("drop table " + REST),
-                INSERT_CMD = Pattern.compile("insert into " + REST),
-                PRINT_CMD = Pattern.compile("print " + REST),
-                SELECT_CMD = Pattern.compile("select " + REST);
-
-        // Stage 2 syntax, contains the clauses of commands.
-        private final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
-                "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
-                SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
-                        "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
-                        "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+" +
-                        "[\\w\\s+\\-*/'<>=!]+?)*))?"),
-                CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+" +
-                        SELECT_CLS.pattern()),
-                INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
-                        "\\s*(?:,\\s*.+?\\s*)*)");
-
-        void eval(String query) {
-            Matcher m;
-            if ((m = CREATE_CMD.matcher(query)).matches()) {
-                createTable(m.group(1));
-            } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-                load(m.group(1));
-            } else if ((m = STORE_CMD.matcher(query)).matches()) {
-                store(m.group(1));
-            } else if ((m = DROP_CMD.matcher(query)).matches()) {
-                dropTable(m.group(1));
-            } else if ((m = INSERT_CMD.matcher(query)).matches()) {
-                insertRow(m.group(1));
-            } else if ((m = PRINT_CMD.matcher(query)).matches()) {
-                printTable(m.group(1));
-            } else if ((m = SELECT_CMD.matcher(query)).matches()) {
-                select(m.group(1));
-            } else {
-                System.err.printf("Malformed query: %s\n", query);
-            }
-        }
-    }
 
     //The tables of the database kept in a map, where each table's associated key
     //is its name as a string
@@ -70,21 +19,45 @@ public class Database {
     }
 
     public String transact(String query) {
-        Parse parser = new Parse();
-        parser.eval(query);
-        return "YOUR CODE HERE";
+        //The list returned from evaluating query using Parser class
+        List<String> stringArgs = Parser.eval(query);
+
+        String command = stringArgs.get(0);
+
+        if (command.equals("create new table")) {
+            //Gets table name
+            String tableName = stringArgs.get(1);
+            List<String> colInfo = new LinkedList<>();
+            int stringArgsLength = stringArgs.size();
+            for (int i = 2; i < stringArgsLength; i++) {
+                String[] colSplit = stringArgs.get(i).split(" ");
+                for (String col : colSplit) {
+                    colInfo.add(col);
+                }
+            }
+            return createTable(tableName, colInfo);
+        }
+
+
+        return "Malformed Command";
     }
 
     /**
      * Creates a new table; takes in column names and types, creates columns,
      * then puts the table into the tables map.
      */
-    private String createTable(String tableName, String[] columnInfo) {
-        //TODO: Implement multiple arguments when taking in list of strings to create table
+    private String createTable(String tableName, List<String> columnInfo) {
+        if (columnInfo.size() == 0) {
+            return "Error: table must have at least one column";
+        }
+        if (tables.containsKey(tableName)) {
+            return "Error: Already a table " + tableName + " in database";
+        }
         List<Column> columns = new ArrayList<>();
-        for (int i = 0; i < columnInfo.length; i = i + 2) {
-            String columnName = columnInfo[i];
-            String columnType = columnInfo[i + 1];
+        int colInfoLength = columnInfo.size();
+        for (int i = 0; i < colInfoLength; i = i + 2) {
+            String columnName = columnInfo.get(i);
+            String columnType = columnInfo.get(i+1);
             Column c = new Column(columnName, columnType);
             columns.add(c);
         }
@@ -138,5 +111,9 @@ public class Database {
     }
 
     /* Inserts a row into the table */
-    private String insertRow(String tableName, )
+    private String insertRow(String tableName, List<String> rowInfo) {
+        Table table = tables.get(tableName);
+        table.addRow(rowInfo);
+        return "";
+    }
 }
