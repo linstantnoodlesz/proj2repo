@@ -96,7 +96,7 @@ public class Table {
         }
 
         //Iterates through joined table names to create the joined table
-        List<Column> joinedTable = new ArrayList<>();
+        List<Column> joinedTableColumns = new ArrayList<>();
         for (String name : joinedColumnNames) {
             Column colToAdd;
             if (columnNames.contains(name)) {
@@ -104,12 +104,37 @@ public class Table {
             } else {
                 colToAdd = new Column(name, otherTable.getColumn(name).columnType);
             }
-            joinedTable.add(colToAdd);
+            joinedTableColumns.add(colToAdd);
         }
 
+        //Gets length of items in this table
+        int thisLength = table.get(0).items.size();
+        //Gets length of items in other table
+        int otherLength = otherTable.table.get(0).items.size();
 
+        //Iterates through the rows in this table to check for same values for shared columns
+        for (int i = 0; i < thisLength; i++) {
 
+            List<Object> potentialRow = new ArrayList<>();
+
+            //Iterates through the rows in the other table
+            for (int j = 0; j < otherLength; j++) {
+
+                //Iterates through shared column names in this table
+                for (String s : sharedColumnNames) {
+                    Column sharedColThis = getColumn(s);
+                    Object item1 = sharedColThis.items.get(i);
+                    Column sharedColOther = getColumn(s);
+                    Object item2 = sharedColOther.items.get(j);
+                    //If value is unequal, break from for-loop and move on to next row
+                    if (!item1.equals(item2)) {
+                        break;
+                    }
+                }
+            }
+        }
     }
+
 
     /**
      * Returns the cartesian product of tables 1 & 2. That is, for each row in table 1,
