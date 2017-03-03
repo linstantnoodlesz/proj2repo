@@ -176,12 +176,11 @@ public class Database {
                     rowInfo.add(item);
                 }
                 insertRow(tableName, rowInfo);
-                System.out.println(rowInfo);
                 line = br.readLine();
             }
             return "";
         } catch (FileNotFoundException e) {
-            return "No table " + tableName + " found.";
+            return "ERROR: .";
         } catch (IOException e) {
             return "Error: IO Exception!";
         }
