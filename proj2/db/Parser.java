@@ -1,5 +1,6 @@
 package db;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.List;
@@ -53,9 +54,9 @@ public class Parser {
         if ((m = CREATE_CMD.matcher(query)).matches()) {
             return createTable(m.group(1));
         } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-            loadTable(m.group(1));
+            return loadTable(m.group(1));
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
-            storeTable(m.group(1));
+            return storeTable(m.group(1));
         } else if ((m = DROP_CMD.matcher(query)).matches()) {
             return dropTable(m.group(1));
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
@@ -105,28 +106,18 @@ public class Parser {
         return null;
     }
 
-    /* private static String[] createNewTable(String name, String[] cols) {
-        StringJoiner joiner = new StringJoiner(", ");
-        for (int i = 0; i < cols.length-1; i++) {
-            joiner.add(cols[i]);
-        }
-
-        String colSentence = joiner.toString() + " and " + cols[cols.length-1];
-        System.out.printf("You are trying to create a table named %s with the columns %s\n", name, colSentence);
-        return cols;
-    } */
-
-    private static void createSelectedTable(String name, String exprs, String tables, String conds) {
-        System.out.printf("You are trying to create a table named %s by selecting these expressions:" +
-                " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", name, exprs, tables, conds);
+    private static List<String> loadTable(String name) {
+        List<String> stringArgs = new ArrayList<>();
+        stringArgs.add("load");
+        stringArgs.add(name);
+        return stringArgs;
     }
 
-    private static void loadTable(String name) {
-        System.out.printf("You are trying to load the table named %s\n", name);
-    }
-
-    private static void storeTable(String name) {
-        System.out.printf("You are trying to store the table named %s\n", name);
+    private static List<String> storeTable(String name) {
+        List<String> stringArgs = new LinkedList<>();
+        stringArgs.add("store");
+        stringArgs.add(name);
+        return stringArgs;
     }
 
     private static List<String> dropTable(String name) {

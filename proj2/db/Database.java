@@ -1,7 +1,6 @@
 package db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 public class Database {
@@ -62,6 +61,12 @@ public class Database {
                     }
                     return insertRow(tableName, rowVals);
 
+                case "store":
+                    return store(tableName);
+
+                case "load":
+                    return load(tableName);
+
                 case "print":
                     //Prints the table
                     return printTable(tableName);
@@ -78,7 +83,9 @@ public class Database {
 
     /**
      * Creates a new table; takes in column names and types, creates columns,
-     * then puts the table into the tables map.
+     * then puts the table into the tables map. The list columnInfo must be
+     * ordered such that even-indexed items are the column names, and odd-indexed
+     * items are the corresponding column types.
      */
     private String createNewTable(String tableName, List<String> columnInfo) {
         if (columnInfo.size() == 0) {
@@ -109,7 +116,7 @@ public class Database {
             Table table1 = tables.get(tableNames.get(0));
             Table table2 = tables.get(tableNames.get(1));
             Table joinedTable = table1.join(table2);
-            return joinedTable.printTable();
+            return joinedTable.print();
         }
         catch (NullPointerException e) {
             return "Malformed select query: Cannot find one of the tables given";
@@ -132,10 +139,9 @@ public class Database {
      */
     private String store(String tableName) {
         //TODO: Learn how to write content into a file
-        Table t = tables.get(tableName);
         try {
             PrintWriter writer = new PrintWriter(tableName + ".tbl", "UTF-8");
-            writer.print(t.printTable());
+            writer.print(printTable(tableName));
             writer.close();
         } catch (IOException e){
             System.out.println("No such table written");
@@ -145,11 +151,40 @@ public class Database {
 
     /**
      * Loads the contents of <table name>.tbl file into memory as a table with
-     * name <table name>
+     * name <table name>. Takes string of
      */
     private String load(String tableName) {
         //TODO: Read input from file
-        return "";
+        try (BufferedReader br = new BufferedReader(new FileReader(tableName + ".tbl"))) {
+
+            //This string contains column information
+            String line = br.readLine();
+            String[] colInfoString = line.split(",|\\ ");
+            List<String> colInfoList = new ArrayList<>();
+            for (String colInfo : colInfoString) {
+                colInfoList.add(colInfo);
+            }
+            //Creates a new table in database with table name and column info given in colInfoList
+            createNewTable(tableName, colInfoList);
+
+            //Read next lines, which are the rows
+            line = br.readLine();
+            while (line != null) {
+                String[] rowInfoString = line.split(",|\\ ");
+                List<String> rowInfo = new ArrayList<>();
+                for (String item : rowInfoString) {
+                    rowInfo.add(item);
+                }
+                insertRow(tableName, rowInfo);
+                System.out.println(rowInfo);
+                line = br.readLine();
+            }
+            return "";
+        } catch (FileNotFoundException e) {
+            return "No table " + tableName + " found.";
+        } catch (IOException e) {
+            return "Error: IO Exception!";
+        }
     }
 
     /* Prints the table */
@@ -159,12 +194,15 @@ public class Database {
         }
         //Gets the table from database and obtains the list of columns
         Table t = tables.get(tableName);
-        return t.printTable();
+        return t.print();
     }
 
     /* Inserts a row into the table */
     private String insertRow(String tableName, List<String> rowInfo) {
-        Table table = tables.get(tableName);
-        return table.addRow(rowInfo);
+        if (tables.containsKey(tableName)) {
+            Table table = tables.get(tableName);
+            return table.addRow(rowInfo);
+        }
+        return "No table " + tableName + " in database.";
     }
 }

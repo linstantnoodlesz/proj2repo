@@ -239,7 +239,7 @@ public class Table {
     }
 
     /*Prints the table */
-    String printTable() {
+    String print() {
         String tablePrinted = "";
         //Prints the first row which is the list of column names and types
         for (int i = 0; i < table.size(); i++) {
@@ -249,7 +249,7 @@ public class Table {
             Column column = table.get(i);
             tablePrinted += column.columnName + " " + column.columnType;
         }
-        tablePrinted += "\n";
+        tablePrinted += "\r\n";
         //Iterates through the rows, defined by the size of the list of items of each column
         int rows = table.get(0).items.size();
         for (int j = 0; j < rows; j++) {
@@ -269,7 +269,7 @@ public class Table {
                 }
             }
             if (j != rows - 1) {
-                tablePrinted += "\n";
+                tablePrinted += "\r\n";
             }
         }
         return tablePrinted;
