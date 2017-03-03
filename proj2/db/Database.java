@@ -170,7 +170,7 @@ public class Database {
             //Read next lines, which are the rows
             line = br.readLine();
             while (line != null) {
-                String[] rowInfoString = line.split(",|\\ ");
+                String[] rowInfoString = line.split(",");
                 List<String> rowInfo = new ArrayList<>();
                 for (String item : rowInfoString) {
                     rowInfo.add(item);

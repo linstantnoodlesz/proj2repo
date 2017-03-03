@@ -21,12 +21,14 @@ class Column {
 
     Column(String columnName, String type) {
         this.columnName = columnName;
-        if (type == "int") {
+        if (type.equals("int")) {
             items = new ArrayList<Integer>();
-        } else if (type == "float") {
+        } else if (type.equals("float")) {
             items = new ArrayList<Float>();
-        } else {
+        } else if (type.equals("string")) {
             items = new ArrayList<String>();
+        } else {
+            throw new RuntimeException(type + " is an invalid type.");
         }
         columnType = type.toLowerCase();
     }

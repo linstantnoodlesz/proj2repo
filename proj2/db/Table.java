@@ -63,7 +63,8 @@ public class Table {
                 String item = row.get(i);
                 column.items.add(item);
             } else {
-                return "Types do not match";
+                //TODO: Make better
+                return "Types do not match, or invalid type";
             }
         }
         return "";
