@@ -57,7 +57,7 @@ public class Parser {
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
             storeTable(m.group(1));
         } else if ((m = DROP_CMD.matcher(query)).matches()) {
-            dropTable(m.group(1));
+            return dropTable(m.group(1));
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
             return insertRow(m.group(1));
         } else if ((m = PRINT_CMD.matcher(query)).matches()) {
@@ -88,7 +88,17 @@ public class Parser {
             }
             return stringArgs;
         } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
-            createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
+            //TODO: Implement splitting of strings into individual data
+            stringArgs.add("create selected table");
+            //Group 1 is the name of the table
+            stringArgs.add(m.group(1));
+            //Group 2 is the string of column expressions
+            stringArgs.add(m.group(2));
+            //Group 3 is the string of table name/s to get from
+            stringArgs.add(m.group(3));
+            //Group 4 is the string of the conditional expressions
+            stringArgs.add(m.group(4));
+            return stringArgs;
         } else {
             System.err.printf("Malformed create: %s\n", expr);
         }
@@ -119,8 +129,11 @@ public class Parser {
         System.out.printf("You are trying to store the table named %s\n", name);
     }
 
-    private static void dropTable(String name) {
-        System.out.printf("You are trying to drop the table named %s\n", name);
+    private static List<String> dropTable(String name) {
+        List<String> stringArgs = new LinkedList<>();
+        stringArgs.add("drop");
+        stringArgs.add(name);
+        return stringArgs;
     }
 
     /* Returns the list of values in the row to be added, as strings */

@@ -5,6 +5,6 @@ package db;
  */
 public interface Conditional {
 
-    boolean condition();
+    boolean compare();
 
 }

@@ -22,35 +22,56 @@ public class Database {
         //The list returned from evaluating query using Parser class
         List<String> stringArgs = Parser.eval(query);
 
-        String command = stringArgs.get(0);
-        //Gets table name
-        String tableName = stringArgs.get(1);
-        //Gets length of the list string args from query
-        int stringArgsLength = stringArgs.size();
+        try {
+            String command = stringArgs.get(0);
+            //Gets table name
+            String tableName = stringArgs.get(1);
+            //Gets length of the list string args from query
+            int stringArgsLength = stringArgs.size();
 
-        switch (command) {
-            case "create new table":
-                List<String> colInfo = new LinkedList<>();
-                for (int i = 2; i < stringArgsLength; i++) {
-                    String[] colSplit = stringArgs.get(i).split(" ");
-                    for (String col : colSplit) {
-                        colInfo.add(col);
+            switch (command) {
+                case "create new table":
+                    List<String> colInfo = new LinkedList<>();
+                    for (int i = 2; i < stringArgsLength; i++) {
+                        String[] colSplit = stringArgs.get(i).split(" ");
+                        for (String col : colSplit) {
+                            colInfo.add(col);
+                        }
                     }
-                }
-                return createTable(tableName, colInfo);
+                    return createNewTable(tableName, colInfo);
 
-            case "insert":
-                List<String> rowVals = new LinkedList<>();
-                for (int i = 2; i < stringArgsLength; i++) {
-                    rowVals.add(stringArgs.get(i));
-                }
-                return insertRow(tableName, rowVals);
+                case "create selected table":
+                    //Gets table names
+                    String tableNameString = stringArgs.get(3).replace(" ", "");
+                    String[] tableNames = tableNameString.split(",");
 
-            case "print":
-                //Prints the table
-                return printTable(tableName);
+                    Table selectedTable = tables.get(tableNames[0]);
+                    for (int i = 1; i < tableNames.length; i++) {
+                        selectedTable = selectedTable.join(tables.get(tableNames[i]));
+                    }
+                    //Select all from the tables
+                    if (stringArgs.get(2).equals("*")) {
+                        tables.put(tableName, selectedTable);
+                    }
+                    return "";
+
+                case "insert":
+                    List<String> rowVals = new LinkedList<>();
+                    for (int i = 2; i < stringArgsLength; i++) {
+                        rowVals.add(stringArgs.get(i));
+                    }
+                    return insertRow(tableName, rowVals);
+
+                case "print":
+                    //Prints the table
+                    return printTable(tableName);
+
+                case "drop":
+                    return dropTable(tableName);
+            }
+        } catch (NullPointerException e) {
+            return "";
         }
-
 
         return "Malformed Command";
     }
@@ -59,7 +80,7 @@ public class Database {
      * Creates a new table; takes in column names and types, creates columns,
      * then puts the table into the tables map.
      */
-    private String createTable(String tableName, List<String> columnInfo) {
+    private String createNewTable(String tableName, List<String> columnInfo) {
         if (columnInfo.size() == 0) {
             return "Error: table must have at least one column";
         }
@@ -77,6 +98,22 @@ public class Database {
         Table newTable = new Table(columns);
         tables.put(tableName, newTable);
         return "";
+    }
+
+    /**
+     * Creates a selected table, takes in column names from given tables, joins the tables,
+     * //TODO: Implement column and conditional expressions
+     */
+    private String simpleCreateSelectedTable(List<String> cols, List<String> tableNames) {
+        try {
+            Table table1 = tables.get(tableNames.get(0));
+            Table table2 = tables.get(tableNames.get(1));
+            Table joinedTable = table1.join(table2);
+            return joinedTable.printTable();
+        }
+        catch (NullPointerException e) {
+            return "Malformed select query: Cannot find one of the tables given";
+        }
     }
 
     /**
@@ -117,10 +154,12 @@ public class Database {
 
     /* Prints the table */
     private String printTable(String tableName) {
+        if (!tables.containsKey(tableName)) {
+            return "No table " + tableName + " in database.";
+        }
         //Gets the table from database and obtains the list of columns
         Table t = tables.get(tableName);
-        System.out.println(t.printTable());
-        return "";
+        return t.printTable();
     }
 
     /* Inserts a row into the table */

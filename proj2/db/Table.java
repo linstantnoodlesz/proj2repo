@@ -95,6 +95,11 @@ public class Table {
             }
         }
 
+        //If the tables don't share any columns, return their cartesian product
+        if (sharedColumnNames.isEmpty()) {
+            return cartesianProduct(otherTable);
+        }
+
         //Adds the rest of the columns to joined column names
         for (String table1name : table1Names) {
             joinedColumnNames.add(table1name);
@@ -105,8 +110,8 @@ public class Table {
 
         //Iterates through joined table names to create the joined table
         List<Column> joinedTableColumns = new ArrayList<>();
+        Column colToAdd;
         for (String name : joinedColumnNames) {
-            Column colToAdd;
             if (columnNames.contains(name)) {
                 colToAdd = new Column(name, getColumn(name).columnType);
             } else {
@@ -124,9 +129,10 @@ public class Table {
         int otherLength = otherTable.table.get(0).items.size();
 
         //Iterates through the rows in this table to check for same values for shared columns
+        List<String> potentialRow;
         for (int i = 0; i < thisLength; i++) {
 
-            List<String> potentialRow = new ArrayList<>();
+            potentialRow = new ArrayList<>();
 
             //Iterates through the rows in the other table
             for (int j = 0; j < otherLength; j++) {
@@ -136,7 +142,7 @@ public class Table {
                 for (String s : sharedColumnNames) {
                     Column sharedColThis = getColumn(s);
                     Object item1 = sharedColThis.items.get(i);
-                    Column sharedColOther = getColumn(s);
+                    Column sharedColOther = otherTable.getColumn(s);
                     Object item2 = sharedColOther.items.get(j);
                     //If value is unequal, break from for-loop and move on to next row
                     if (!item1.equals(item2)) {
@@ -162,7 +168,12 @@ public class Table {
     }
 
     private String toString(Object o) {
-        return toString(o);
+        if (o instanceof Integer) {
+            return Integer.toString((Integer) o);
+        } else if (o instanceof Float) {
+            return Float.toString((Float) o);
+        }
+        return (String) o;
     }
 
 
@@ -172,7 +183,8 @@ public class Table {
      */
     private Table cartesianProduct(Table otherTable) {
         List<Column> tableColumns = new ArrayList<>(table);
-        for (Column c : otherTable.table) {
+        List<Column> otherTableColumns = new ArrayList<>(otherTable.table);
+        for (Column c : otherTableColumns) {
             tableColumns.add(c);
         }
         Table joinedTable = new Table(tableColumns);
@@ -188,26 +200,29 @@ public class Table {
         //adding each item to the row to be added to joined table
         for (int i = 0; i < thisLength; i++) {
 
-            List<String> rowToAdd = new ArrayList<>();
-
             //Iterate through the columns in this table to add items to rowToAdd
-            for (Column c : table) {
-                List colItemsThis = c.items;
+            List colItemsThis;
+            List rowToAdd = new ArrayList<>();
+            for (Column c1 : table) {
+                colItemsThis = c1.items;
                 rowToAdd.add(toString(colItemsThis.get(i)));
             }
-
+            //Keeps track of the items of the row of this table
+            List rowThisPart = new ArrayList<>(rowToAdd);
             for (int j = 0; j < otherLength; j++) {
-
                 //Iterate through the columns in other table to add items to rowToAdd
-                for (Column c : otherTable.table) {
-                    List colItemsOther = c.items;
+                List colItemsOther;
+                for (Column c2 : otherTable.table) {
+                    colItemsOther = c2.items;
                     rowToAdd.add(toString(colItemsOther.get(j)));
                 }
 
                 //Iteration for one row complete; adds row to joined table
                 joinedTable.addRow(rowToAdd);
+                rowToAdd = rowThisPart;
             }
         }
+
         return joinedTable;
     }
 
@@ -237,7 +252,6 @@ public class Table {
         tablePrinted += "\n";
         //Iterates through the rows, defined by the size of the list of items of each column
         int rows = table.get(0).items.size();
-
         for (int j = 0; j < rows; j++) {
 
             //For each row, iterate through the columns
@@ -254,7 +268,9 @@ public class Table {
                     tablePrinted += items.get(j);
                 }
             }
-            tablePrinted += "\n";
+            if (j != rows - 1) {
+                tablePrinted += "\n";
+            }
         }
         return tablePrinted;
     }
