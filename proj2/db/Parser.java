@@ -142,7 +142,7 @@ public class Parser {
         stringArgs.add(m.group(1));
 
         //Adds a string of the values to be inserted
-        String row = m.group(2).replaceAll(",\\s+",",");;
+        String row = m.group(2).replaceAll(",\\s+",",");
 
         //System.out.printf("You are trying to insert the row \"%s\" into the table %s\n", rowValues, m.group(1));
 

@@ -162,6 +162,8 @@ public class Database {
 
             //This string contains column information
             String line = br.readLine();
+            line = line.replaceAll(",\\s+",",");
+            System.out.println(line);
             String[] colInfoString = line.split(",|\\ ");
             List<String> colInfoList = new ArrayList<>();
             for (String colInfo : colInfoString) {
