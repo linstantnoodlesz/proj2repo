@@ -250,7 +250,7 @@ public class Table {
             Column column = table.get(i);
             tablePrinted += column.columnName + " " + column.columnType;
         }
-        tablePrinted += "\r\n";
+        tablePrinted += "\n";
         //Iterates through the rows, defined by the size of the list of items of each column
         int rows = table.get(0).items.size();
         for (int j = 0; j < rows; j++) {
@@ -270,7 +270,7 @@ public class Table {
 
             }
             if (j != rows - 1) {
-                tablePrinted += "\r\n";
+                tablePrinted += "\n";
             }
         }
         return tablePrinted;

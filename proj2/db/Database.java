@@ -141,7 +141,10 @@ public class Database {
         //TODO: Learn how to write content into a file
         try {
             PrintWriter writer = new PrintWriter(tableName + ".tbl", "UTF-8");
-            writer.print(printTable(tableName));
+            String printedTable = printTable(tableName);
+            for (String s : printedTable.split("\n")) {
+                writer.println(s);
+            }
             writer.close();
         } catch (IOException e){
             System.out.println("No such table written");
