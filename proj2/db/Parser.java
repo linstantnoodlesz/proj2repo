@@ -64,7 +64,7 @@ public class Parser {
         } else if ((m = PRINT_CMD.matcher(query)).matches()) {
             return printTable(m.group(1));
         } else if ((m = SELECT_CMD.matcher(query)).matches()) {
-            select(m.group(1));
+            return select(m.group(1));
         } else {
             System.err.printf("Malformed query: %s\n", query);
         }
@@ -162,14 +162,23 @@ public class Parser {
         return stringArgs;
     }
 
-    private static void select(String expr) {
+    private static List<String> select(String expr) {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed select: %s\n", expr);
-            return;
+            return null;
         }
+        List<String> stringArgs = new LinkedList<>();
+        stringArgs.add("select");
+        stringArgs.add("None");
+        //Group 1 is the string of column expressions
+        stringArgs.add(m.group(1));
+        //Group 2 is the string of table name/s to get from
+        stringArgs.add(m.group(2));
+        //Group 3 is the string of conditional expressions
+        stringArgs.add(m.group(3));
 
-        select(m.group(1), m.group(2), m.group(3));
+        return stringArgs;
     }
 
     private static void select(String exprs, String tables, String conds) {

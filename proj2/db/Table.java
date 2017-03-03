@@ -183,12 +183,20 @@ public class Table {
      * we append to it a row in table 2 for each row in table 2.
      */
     private Table cartesianProduct(Table otherTable) {
-        List<Column> tableColumns = new ArrayList<>(table);
-        List<Column> otherTableColumns = new ArrayList<>(otherTable.table);
-        for (Column c : otherTableColumns) {
-            tableColumns.add(c);
+
+        List<Column> joinedColumns = new ArrayList<>();
+
+        //Adds new columns with corresponding name and type from this table
+        for (Column c : table) {
+            Column colToAdd = new Column(c.columnName, c.columnType);
+            joinedColumns.add(colToAdd);
         }
-        Table joinedTable = new Table(tableColumns);
+        //Adds new columns with corresponding name and type from other table
+        for (Column c : otherTable.table) {
+            Column colToAdd = new Column(c.columnName, c.columnType);
+            joinedColumns.add(colToAdd);
+        }
+        Table joinedTable = new Table(joinedColumns);
 
         //Gets length of column items in this table and in other table
         Column firstCol1 = table.get(0);
@@ -201,18 +209,17 @@ public class Table {
         //adding each item to the row to be added to joined table
         for (int i = 0; i < thisLength; i++) {
 
-            //Iterate through the columns in this table to add items to rowToAdd
-            List colItemsThis;
-            List rowToAdd = new ArrayList<>();
-            for (Column c1 : table) {
-                colItemsThis = c1.items;
-                rowToAdd.add(toString(colItemsThis.get(i)));
-            }
-            //Keeps track of the items of the row of this table
-            List rowThisPart = new ArrayList<>(rowToAdd);
+            List colItemsOther;
             for (int j = 0; j < otherLength; j++) {
+
+                //Iterate through the columns in this table to add items to rowToAdd
+                List colItemsThis;
+                List rowToAdd = new ArrayList<>();
+                for (Column c1 : table) {
+                    colItemsThis = c1.items;
+                    rowToAdd.add(toString(colItemsThis.get(i)));
+                }
                 //Iterate through the columns in other table to add items to rowToAdd
-                List colItemsOther;
                 for (Column c2 : otherTable.table) {
                     colItemsOther = c2.items;
                     rowToAdd.add(toString(colItemsOther.get(j)));
@@ -220,7 +227,6 @@ public class Table {
 
                 //Iteration for one row complete; adds row to joined table
                 joinedTable.addRow(rowToAdd);
-                rowToAdd = rowThisPart;
             }
         }
 

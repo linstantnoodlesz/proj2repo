@@ -54,6 +54,21 @@ public class Database {
                     }
                     return "";
 
+                case "select":
+                    //Gets table names
+                    String selectedTableNameString = stringArgs.get(3).replace(" ", "");
+                    String[] selectedTableNames = selectedTableNameString.split(",");
+
+                    Table table = tables.get(selectedTableNames[0]);
+                    for (int i = 1; i < selectedTableNames.length; i++) {
+                        table = table.join(tables.get(selectedTableNames[i]));
+                    }
+                    //Select all from the tables
+                    if (stringArgs.get(2).equals("*")) {
+                        return table.print();
+                    }
+                    return "";
+
                 case "insert":
                     List<String> rowVals = new LinkedList<>();
                     for (int i = 2; i < stringArgsLength; i++) {
@@ -73,6 +88,7 @@ public class Database {
 
                 case "drop":
                     return dropTable(tableName);
+
             }
         } catch (NullPointerException e) {
             return "";
