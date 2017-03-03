@@ -262,11 +262,11 @@ public class Table {
                 //Gets the items list of the column
                 Column c = table.get(i);
                 List items = c.items;
-                if (c.columnType.equals("string")) {
+                /*if (c.columnType.equals("string")) {
                     tablePrinted += "\'" + items.get(j) + "\'";
-                } else {
+                } else {*/
                     tablePrinted += items.get(j);
-                }
+
             }
             if (j != rows - 1) {
                 tablePrinted += "\r\n";
