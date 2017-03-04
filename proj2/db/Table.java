@@ -1,6 +1,9 @@
 package db;
 
-import javax.management.AttributeList;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.*;
 import java.lang.Object;
 
@@ -247,38 +250,45 @@ public class Table {
 
     /*Prints the table */
     String print() {
-        String tablePrinted = "";
-        //Prints the first row which is the list of column names and types
-        for (int i = 0; i < table.size(); i++) {
-            if (i > 0) {
-                tablePrinted += ",";
-            }
-            Column column = table.get(i);
-            tablePrinted += column.columnName + " " + column.columnType;
-        }
-        tablePrinted += "\n";
-        //Iterates through the rows, defined by the size of the list of items of each column
-        int rows = table.get(0).items.size();
-        for (int j = 0; j < rows; j++) {
-
-            //For each row, iterate through the columns
+        try {
+            String tablePrinted = "";
+            //Prints the first row which is the list of column names and types
             for (int i = 0; i < table.size(); i++) {
                 if (i > 0) {
                     tablePrinted += ",";
                 }
-                //Gets the items list of the column
-                Column c = table.get(i);
-                List items = c.items;
-                /*if (c.columnType.equals("string")) {
-                    tablePrinted += "\'" + items.get(j) + "\'";
-                } else {*/
-                    tablePrinted += items.get(j);
+                Column column = table.get(i);
+                tablePrinted += column.columnName + " " + column.columnType;
+            }
+            tablePrinted += "\n";
+            //Iterates through the rows, defined by the size of the list of items of each column
+            int rows = table.get(0).items.size();
+            for (int j = 0; j < rows; j++) {
 
+                //For each row, iterate through the columns
+                for (int i = 0; i < table.size(); i++) {
+                    if (i > 0) {
+                        tablePrinted += ",";
+                    }
+                    //Gets the items list of the column
+                    Column c = table.get(i);
+                    List items = c.items;
+                    Object item = items.get(j);
+                    if (c.columnType.equals("float")) {
+                        DecimalFormat df = new DecimalFormat();
+                        df.setMinimumFractionDigits(3);
+                        tablePrinted += "\'" + df.format(item) + "\'";
+                    } else {
+                        tablePrinted += items.get(j);
+                    }
+                }
+                if (j != rows - 1) {
+                    tablePrinted += "\n";
+                }
             }
-            if (j != rows - 1) {
-                tablePrinted += "\n";
-            }
+            return tablePrinted;
+        } catch(IndexOutOfBoundsException e){
+            return "ERROR: .";
         }
-        return tablePrinted;
     }
 }

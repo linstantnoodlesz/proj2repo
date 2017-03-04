@@ -91,7 +91,7 @@ public class Database {
 
             }
         } catch (NullPointerException e) {
-            return "";
+            return "ERROR: .";
         }
 
         return "Malformed Command";
@@ -147,7 +147,7 @@ public class Database {
             tables.remove(tableName);
             return "";
         }
-        return "No table " + tableName + " found in database.";
+        return "ERROR: .";
     }
 
     /**
@@ -203,7 +203,7 @@ public class Database {
         } catch (FileNotFoundException e) {
             return "ERROR: .";
         } catch (IOException e) {
-            return "Error: IO Exception!";
+            return "Error: IO Exception";
         }
     }
 
